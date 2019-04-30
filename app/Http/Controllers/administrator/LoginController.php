@@ -4,16 +4,29 @@
 namespace App\Http\Controllers\administrator;
 
 
+use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\administrator\UserRequests;
+use App\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Auth\RegistersUsers;
+use mysql_xdevapi\Result;
 
 
 class LoginController extends Controller
 {
     use AuthenticatesUsers;
 
-
+    /**
+     * 登录
+     * @param Request $request
+     * @return array|void
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function login(Request $request)
     {
 //        return 12;
@@ -30,22 +43,65 @@ class LoginController extends Controller
 
         if ($this->attemptLogin($request)) {
            $this->sendLoginResponse($request);
-           return ['code'=>'success','error'=>'登录成功'];
+           return result('SUCCESS','登陆成功');
         }
 
-        return ['code'=>'FALT','error'=>'登录失败'];
+        return result('FALT','登陆失败');
 
 
     }
 
-    public function username()
+    /**
+     * 注册
+     * @param UserRequests $request
+     * @return array
+     */
+    public function registerss(UserRequests $request)
     {
-        return 'name';
+        $register=new RegisterController;
+
+        event(new Registered($user = $this->create($request->all())));
+
+        $register->guard()->login($user);
+
+        return $register->registered($request, $user);
     }
-//    protected function attemptLogin(Request $request)
-//    {
-//        return $this->guard()->attempt(
-//            $this->credentials($request), true
-//        );
-//    }
+
+    /**
+     * 创建用户
+     * @param array $data
+     * @return mixed
+     */
+    protected function create(array $data)
+    {
+        return User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+        ]);
+    }
+
+    /**
+     * 退出登录
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        return result('SUCCESS','退出成功');
+    }
+
+    public function aa(Request $request)
+    {
+        $user=$request->user();
+
+        $id=Auth::id();
+        dd($user,$id);
+    }
+
+
 }
