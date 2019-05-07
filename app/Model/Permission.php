@@ -1,26 +1,23 @@
 <?php
 
-
 namespace App\Model;
 
-
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
 
-class User extends Model
+class Permission extends Model
 {
-    /** 用户 */
-    /**
-     *用户创建
+
+    /** 权限 */
+
+    /** 创建
      * @param $data
      * @return array
      */
     public function create($data)
     {
         try{
-            $data['password'] = Hash::make($data['password']);
-            $resu=static::insert($data);
-            return isset($resu) ?  result('SUCCESS','用户创建成功') :  result('SUCCESS','用户创建失败');
+            $state=static::insert($data);
+            return !empty($state) ? result('SUCCESS','权限创建成功') : result('FALT','权限创建失败');
 
         }catch (\Exception $exception){
             exception($exception,'VideoResource');
@@ -29,26 +26,21 @@ class User extends Model
     }
 
     /**
-     * 删除用户
-     * @param $id
-     * @return array
+     * 删除
      */
     public function del($id)
     {
         try {
             $start = static::where('id', $id)->delete();
-            return isset($start) ? result('SUCCESS','用户删除成功') : result('FALT','用户删除失败,请您刷新后重试');
+            $eowsf=RolePermission::where('permission_id',$id)->first();
+            $scie=1;
+            if($eowsf){
+                $scie= RolePermission::where('permission_id',$id)->delete();
+            }
+            return !empty($start)&&!empty($scie) ? result('SUCCESS','权限删除成功') : result('FALT','权限删除失败,请您刷新后重试');
         }catch (\Exception $exception){
             exception($exception,'VideoResource');
             return result('FAIL',$exception->getMessage());
         }
-    }
-
-    /**
-     * 获取用户
-     */
-    public function list()
-    {
-
     }
 }

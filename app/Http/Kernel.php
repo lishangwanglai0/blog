@@ -2,6 +2,7 @@
 
 namespace App\Http;
 
+
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -40,9 +41,16 @@ class Kernel extends HttpKernel
         'api' => [
             \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\Session\Middleware\StartSession::class,
-            \App\Http\Middleware\EncryptCookies::class,
-            'throttle:60,1',
+            'throttle:60,1',// 1分钟 限制 调用接口60次
             'bindings',
+
+        ],
+        'lbbuoe' => [
+            \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            'throttle:60,1',// 1分钟 限制 调用接口60次
+            'bindings',
+            'roleis',
         ],
     ];
 
@@ -57,6 +65,7 @@ class Kernel extends HttpKernel
         'auth' => \App\Http\Middleware\Authenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'roleis'   => \App\Http\Middleware\SafetyRole::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,

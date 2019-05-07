@@ -1,20 +1,19 @@
 <?php
 
 
-namespace App\Http\Controllers\administrator;
+namespace App\Http\Controllers\administrator\auth;
 
 
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\administrator\UserRequests;
+use App\Http\Requests\administrator\UserRequest;
 use App\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use mysql_xdevapi\Result;
+
 
 
 class LoginController extends Controller
@@ -27,11 +26,10 @@ class LoginController extends Controller
      * @return array|void
      * @throws \Illuminate\Validation\ValidationException
      */
+
     public function login(Request $request)
     {
-//        return 12;
 
-//        dd($request);
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and
         // the IP address of the client making these requests into this application.
@@ -53,10 +51,10 @@ class LoginController extends Controller
 
     /**
      * 注册
-     * @param UserRequests $request
+     * @param UserRequest $request
      * @return array
      */
-    public function registerss(UserRequests $request)
+    public function register(UserRequest $request)
     {
         $register=new RegisterController;
 
@@ -94,13 +92,11 @@ class LoginController extends Controller
 
         return result('SUCCESS','退出成功');
     }
-
-    public function aa(Request $request)
+    public function aa()
     {
-        $user=$request->user();
-
-        $id=Auth::id();
-        dd($user,$id);
+        $id=1;
+      $a=  session('permissionurl'.$id);
+      dd($a);
     }
 
 
